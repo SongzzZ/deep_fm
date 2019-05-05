@@ -5,16 +5,17 @@
 @Author: ZhaoSong
 @LastEditors: ZhaoSong
 @Date: 2019-05-04 19:23:01
-@LastEditTime: 2019-05-05 10:37:12
+@LastEditTime: 2019-05-05 14:04:48
 '''
 import logging
 import random as random
+import pickle
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-from Deep_FM.utilities import *
+from Deep_FM.utilities import one_hot_representation
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.INFO)
 
@@ -264,7 +265,7 @@ def test_model(sess, model, print_every = 50):
 
 if __name__ == '__main__':
     '''launching TensorBoard: tensorboard --logdir=path/to/log-directory'''
-    # seting fields
+    # setting fields
     fields_train = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
                     'banner_pos', 'site_id' ,'site_domain', 'site_category', 'app_domain',
                     'app_id', 'app_category', 'device_model', 'device_type', 'device_id',
@@ -283,10 +284,10 @@ if __name__ == '__main__':
     for field in fields_test:
         with open('dicts/'+field+'.pkl','rb') as f:
             fields_test_dict[field] = pickle.load(f)
-
     # length of representation
     train_array_length = max(fields_train_dict['click'].values()) + 1
     test_array_length = train_array_length - 2
+
     # initialize the model
     config = {}
     config['lr'] = 0.01
