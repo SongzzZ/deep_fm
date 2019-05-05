@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# coding=UTF-8
+'''
+@Description: 
+@Author: ZhaoSong
+@LastEditors: ZhaoSong
+@Date: 2019-05-04 19:22:38
+@LastEditTime: 2019-05-05 11:08:40
+'''
 import pandas as pd
 import numpy as np
 import pickle
@@ -22,6 +31,7 @@ def one_hot_representation(sample, fields_dict, array_length):
         array[ind] = 1
         idx.append(ind)
     return array,idx[:21]
+    
 
 if __name__ == '__main__':
     fields_train = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
@@ -47,7 +57,6 @@ if __name__ == '__main__':
         with open('dicts/'+field+'.pkl','rb') as f:
             fields_test_dict[field] = pickle.load(f)
 
-
     train_array_length = max(fields_train_dict['click'].values()) + 1
     test_array_length = train_array_length - 2
     # initialize the model
@@ -57,5 +66,4 @@ if __name__ == '__main__':
         # data.to_csv('a.csv',mode='a')
         sample = data.iloc[3,:]
         print(one_hot_representation(sample, fields_test_dict, test_array_length))
-
         break
