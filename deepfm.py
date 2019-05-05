@@ -55,8 +55,7 @@ class DeepFM(object):
             #shape of [None,2]
             self.liner_terms = tf.add(tf.matmul(self.x,w1),b)
             #shape of [None,1]
-            self.interaction_terms = tf.multiply(0.5,
-                                                    tf.reduce_mean(
+            self.interaction_terms = tf.multiply(0.5,tf.reduce_mean(
                                                         tf.subtract(
                                                             tf.pow(tf.matmul(self.x,v),2),
                                                             tf.matmul(tf.pow(self.x,2),tf.pow(v,2)))
