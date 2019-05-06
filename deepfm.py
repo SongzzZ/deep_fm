@@ -5,7 +5,7 @@
 @Author: ZhaoSong
 @LastEditors: ZhaoSong
 @Date: 2019-04-28 19:23:01
-@LastEditTime: 2019-05-06 13:57:26
+@LastEditTime: 2019-05-06 17:18:49
 '''
 import logging
 import random as random
@@ -21,7 +21,8 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=log
 
 class DeepFM(object):
     """
-    DeepFM with FTRL Optimization"""
+    DeepFM with FTRL Optimization
+    """
     def __init__(self,config):
         """
         :param config: configuration of hyperparameters
@@ -138,7 +139,7 @@ def train_model(sess, model, epochs=10, print_every=500):
     train_writer = tf.summary.FileWriter('train_logs', sess.graph)
     for e in range(epochs):
         # get training data, iterable
-        train_data = pd.read_csv('train.csv', chunksize=model.batch_size)
+        train_data = pd.read_csv('F:/titanic/train.csv', chunksize=model.batch_size)
         # batch_size data
         for data in train_data:
             actual_batch_size = len(data)
@@ -170,7 +171,7 @@ def train_model(sess, model, epochs=10, print_every=500):
             if global_step % print_every == 0:
                 logging.info("Iteration {0}: with minibatch training loss = {1} and accuracy of {2}"
                              .format(global_step, loss, accuracy))
-                saver.save(sess, "checkpoints/model", global_step=global_step)
+                '''saver.save(sess, "checkpoints/model", global_step=global_step)'''
 
         # print loss of one epoch
         total_loss = np.sum(losses)/num_samples
@@ -187,7 +188,7 @@ def validation_model(sess, model, print_every=50):
     merged = tf.summary.merge_all()
     test_writer = tf.summary.FileWriter('test_logs', sess.graph)
     # get testing data, iterable
-    validation_data = pd.read_csv('train.csv',
+    validation_data = pd.read_csv('F:/titanic/train.csv',
                                   chunksize=model.batch_size)
     # testing step
     valid_step = 1
@@ -233,8 +234,7 @@ def validation_model(sess, model, print_every=50):
 def test_model(sess, model, print_every = 50):
     """training model"""
     # get testing data, iterable
-    test_data = pd.read_csv('test.csv',
-                            chunksize=model.batch_size)
+    test_data = pd.read_csv('F:/titanic/test.csv',chunksize=model.batch_size)
     test_step = 1
     # batch_size data
     for data in test_data:
@@ -256,14 +256,13 @@ def test_model(sess, model, print_every = 50):
         # write to csv files
         data['click'] = y_out_prob[0][:,-1]
         if test_step == 1:
-            data[['id','click']].to_csv('Deep_FM_FTRL_v1.csv', mode='a', index=False, header=True)
+            data[['id','Survived']].to_csv('Deep_FM_FTRL_v1.csv', mode='a', index=False, header=True)
         else:
-            data[['id','click']].to_csv('Deep_FM_FTRL_v1.csv', mode='a', index=False, header=False)
+            data[['id','Survived']].to_csv('Deep_FM_FTRL_v1.csv', mode='a', index=False, header=False)
 
         test_step += 1
         if test_step % 50 == 0:
             logging.info("Iteration {0} has finished".format(test_step))
-
 
 if __name__ == '__main__':
     '''launching TensorBoard: tensorboard --logdir=path/to/log-directory'''
@@ -300,7 +299,7 @@ if __name__ == '__main__':
     # build graph for model
     model.build_graph()
 
-    saver = tf.train.Saver(max_to_keep=5)
+    '''saver = tf.train.Saver(max_to_keep=5)'''
 
 
     with tf.Session() as sess:
