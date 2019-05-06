@@ -4,8 +4,8 @@
 @Description: 
 @Author: ZhaoSong
 @LastEditors: ZhaoSong
-@Date: 2019-05-04 19:22:38
-@LastEditTime: 2019-05-05 14:03:56
+@Date: 2019-05-01 19:22:38
+@LastEditTime: 2019-05-06 13:50:01
 '''
 import pandas as pd
 import numpy as np
@@ -22,8 +22,9 @@ def one_hot_representation(sample, fields_dict, array_length):
     array = np.zeros([array_length])
     idx = []
     for field in fields_dict:
-        # get index of array
-        if field == 'hour':
+        # get index of array index 
+        # 效果体现在name pclass sex sibsp parch embarked上
+        if field == 'Survived':
             field_value = int(str(sample[field])[-2:])
         else:
             field_value = sample[field]
@@ -35,18 +36,12 @@ def one_hot_representation(sample, fields_dict, array_length):
 
 if __name__ == '__main__':
     # setting fields
-    fields_train = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
-              'banner_pos', 'site_id' ,'site_domain', 'site_category', 'app_domain',
-              'app_id', 'app_category', 'device_model', 'device_type', 'device_id',
-              'device_conn_type','click']
+    fields_train = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked','Survived']
 
-    fields_test = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
-                   'banner_pos', 'site_id' ,'site_domain', 'site_category', 'app_domain',
-                   'app_id', 'device_id', 'app_category', 'device_model', 'device_type',
-                   'device_conn_type']
+    fields_test = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked']
 
-    train = pd.read_csv('train.csv',chunksize=100)
-    test = pd.read_csv('test.csv',chunksize=100)
+    train = pd.read_csv('F:/titanic/train.csv',chunksize=100)
+    test = pd.read_csv('F:/titanic/test.csv',chunksize=100)
     # loading dicts
     fields_train_dict = {}
     for field in fields_train:

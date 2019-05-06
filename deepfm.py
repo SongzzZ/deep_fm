@@ -4,8 +4,8 @@
 @Description: 
 @Author: ZhaoSong
 @LastEditors: ZhaoSong
-@Date: 2019-05-04 19:23:01
-@LastEditTime: 2019-05-05 14:04:48
+@Date: 2019-04-28 19:23:01
+@LastEditTime: 2019-05-06 13:57:26
 '''
 import logging
 import random as random
@@ -20,6 +20,8 @@ from Deep_FM.utilities import one_hot_representation
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.INFO)
 
 class DeepFM(object):
+    """
+    DeepFM with FTRL Optimization"""
     def __init__(self,config):
         """
         :param config: configuration of hyperparameters
@@ -66,7 +68,7 @@ class DeepFM(object):
 
         #three hidden-layer neural network, network shape of (200-200-200) 
         with tf.variable_scope('DNN',reuse = False):
-            #embedding layer
+            # embedding layer
             y_embedding_input = tf.reshape(tf.gather(v,self.feature_idx),[-1,self.field_count*self.k])
             # first hidden layer
             w1 = tf.get_variable('w1_dnn',shape = [self.field_count*self.k,200],initializer=tf.truncated_normal_initializer(mean = 0, stddev = 0.01))
@@ -266,15 +268,9 @@ def test_model(sess, model, print_every = 50):
 if __name__ == '__main__':
     '''launching TensorBoard: tensorboard --logdir=path/to/log-directory'''
     # setting fields
-    fields_train = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
-                    'banner_pos', 'site_id' ,'site_domain', 'site_category', 'app_domain',
-                    'app_id', 'app_category', 'device_model', 'device_type', 'device_id',
-                    'device_conn_type','click']
+    fields_train = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked','Survived']
 
-    fields_test = ['hour', 'C1', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21',
-                   'banner_pos', 'site_id' ,'site_domain', 'site_category', 'app_domain',
-                   'app_id', 'device_id', 'app_category', 'device_model', 'device_type',
-                   'device_conn_type']
+    fields_test = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked']
     # loading dicts
     fields_train_dict = {}
     for field in fields_train:
