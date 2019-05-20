@@ -33,7 +33,6 @@ def one_hot_representation(sample, fields_dict, array_length):
         idx.append(ind)
     return array,idx[:21]
     
-
 if __name__ == '__main__':
     # setting fields
     fields_train = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked','Survived']

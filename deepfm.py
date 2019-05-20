@@ -5,7 +5,7 @@
 @Author: ZhaoSong
 @LastEditors: ZhaoSong
 @Date: 2019-04-28 19:23:01
-@LastEditTime: 2019-05-06 17:18:49
+@LastEditTime: 2019-05-20 19:08:22
 '''
 import logging
 import random as random
@@ -15,9 +15,29 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-from Deep_FM.utilities import one_hot_representation
-
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',level=logging.INFO)
+
+def one_hot_representation(sample, fields_dict, array_length):
+    """
+    One hot presentation for every sample data
+    :param fields_dict: fields value to array index
+    :param sample: sample data, type of pd.series 
+    :param array_length: length of one-hot representation
+    :return: one-hot representation, type of np.array
+    """
+    array = np.zeros([array_length])
+    idx = []
+    for field in fields_dict:
+        # get index of array index 
+        # 效果体现在name pclass sex sibsp parch embarked上
+        if field == 'Survived':
+            field_value = int(str(sample[field])[-2:])
+        else:
+            field_value = sample[field]
+        ind = fields_dict[field][field_value]
+        array[ind] = 1
+        idx.append(ind)
+    return array,idx[:21]
 
 class DeepFM(object):
     """
@@ -230,7 +250,6 @@ def validation_model(sess, model, print_every=50):
     print("Overall test loss = {0:.3g} and accuracy of {1:.3g}" \
           .format(total_loss,total_correct))
 
-
 def test_model(sess, model, print_every = 50):
     """training model"""
     # get testing data, iterable
@@ -254,7 +273,7 @@ def test_model(sess, model, print_every = 50):
         # shape of [None,2]
         y_out_prob = sess.run([model.y_out_prob], feed_dict=feed_dict)
         # write to csv files
-        data['click'] = y_out_prob[0][:,-1]
+        data['Survived'] = y_out_prob[0][:,-1]
         if test_step == 1:
             data[['id','Survived']].to_csv('Deep_FM_FTRL_v1.csv', mode='a', index=False, header=True)
         else:
@@ -265,11 +284,12 @@ def test_model(sess, model, print_every = 50):
             logging.info("Iteration {0} has finished".format(test_step))
 
 if __name__ == '__main__':
-    '''launching TensorBoard: tensorboard --logdir=path/to/log-directory'''
-    # setting fields
-    fields_train = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked','Survived']
+    train = pd.read_csv('F:/titanic/train.csv',chunksize=100)
+    test = pd.read_csv('F:/titanic/test.csv',chunksize=100)
+    # setting fields 舍弃了cabin,它的缺失值太多了，预测误差可能会大于它所能提供的信息  
+    fields_train = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Embarked','Survived']
 
-    fields_test = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Cabin','Embarked']
+    fields_test = ['Pclass','Name','Sex','Age','SibSp','Parch','Ticket','Fare','Embarked']
     # loading dicts
     fields_train_dict = {}
     for field in fields_train:
@@ -293,7 +313,7 @@ if __name__ == '__main__':
     # get feature length
     feature_length = test_array_length
     # num of fields
-    field_count = 21
+    field_count = 10
 
     model = DeepFM(config)
     # build graph for model
@@ -309,7 +329,7 @@ if __name__ == '__main__':
         '''check_restore_parameters(sess, saver)'''
         print('start training...')
         train_model(sess, model, epochs=10, print_every=500)
-        # print('start validation...')
-        # validation_model(sess, model, print_every=100)
-        # print('start testing...')
-        # test_model(sess, model)
+        print('start validation...')
+        validation_model(sess, model, print_every=100)
+        print('start testing...')
+        test_model(sess, model)
